@@ -5,12 +5,21 @@ module FinderForm
   def self.included(mod)
     mod.module_eval do
       include ::SelectableAttr::Base
+      
+      unless mod.instance_methods.include?('attributes')
+        def attributes 
+          @attributes ||= {}
+        end
+
+        def attributes=(attrs = {})
+          self.class.elements.each{|element|element.update_finder(self, attrs)}
+        end
+      end
     end
     mod.extend(ClassMethods)
   end
 
   attr_accessor(*ELEMENT_NAMES)
-  def attributes; @attributes ||= {}; end
   def joins; @joins ||= []; end
   def wheres; @wheres ||= []; end
   def parameters; @parameters ||= {}; end
@@ -23,12 +32,12 @@ module FinderForm
     end
     self.joins = []
     self.wheres = []
-    @attributes = {}
+    self.attributes = {}
     @parameters = {}
   end
   
   def attributes_for(options = nil)
-    result = @attributes || {}
+    result = self.attributes || {}
     if options.nil? or options[:object_name].blank?
       result.dup
     else
@@ -39,10 +48,6 @@ module FinderForm
         dest
       end
     end
-  end
-  
-  def attributes=(attrs = {})
-    self.class.elements.each{|element|element.update_finder(self, attrs)}
   end
   
   def build(base_context = {:element_names => ELEMENT_NAMES})
@@ -112,6 +117,7 @@ module FinderForm
     end
     
     def define_finder_attr
+      return if @options[:no_attr_accessor]
       default_value = @options.delete(:default)
       attr_name = self.name
       @finder_class.module_eval do
