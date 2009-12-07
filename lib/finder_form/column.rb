@@ -60,16 +60,20 @@ module FinderForm
       new_attr(Attr::Static, {:connector => 'AND'}, @static_values)
     end
 
-    def setup_match_partial
-      new_attr(Attr::Like, nil)
-    end
-
     def setup_match_exactly
       new_attr(Attr::Simple, :operator => '=')
     end
 
     def setup_match_range
       new_attr(Attr::RangeAttrs, options.delete(:range))
+    end
+
+    Attr::Like::MATCHERS.keys.each do |matcher|
+      class_eval(<<-EOS)
+        def setup_match_#{matcher}
+          new_attr(Attr::Like, :match => :#{matcher.to_s})
+        end
+      EOS
     end
 
     def new_attr(klass, default_options, *args)

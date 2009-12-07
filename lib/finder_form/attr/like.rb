@@ -4,8 +4,8 @@ module FinderForm
     class Like < Base
 
       MATCHERS = {
-        :forward => '%%%s',
-        :backward => '%s%%',
+        :forward => '%s%%',
+        :backward => '%%%s',
         :partial => '%%%s%%'
       }
 

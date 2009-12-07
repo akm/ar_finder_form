@@ -12,7 +12,11 @@ class OrderFinderForm2
     # joins
     inner_join(:belongs_to => :user) do
       # like
-      column(:name, :attr => :user_name)
+      column(:name, :attr => :user_name1)
+      # like forward
+      column(:name, :attr => :user_name2, :match => :forward)
+      # like backward
+      column(:name, :attr => :user_name3, :match => :backward)
     end
     
   end
@@ -26,10 +30,26 @@ describe OrderFinderForm2 do
     form2.to_find_options.should == {}
   end
   
-  it "user_name" do
-    form2 = OrderFinderForm2.new(:user_name => 'ABC')
+  it "user_name1" do
+    form2 = OrderFinderForm2.new(:user_name1 => 'ABC')
     form2.to_find_options.should == {
       :conditions => ["cond_users.name LIKE ?", '%ABC%'],
+      :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
+    }
+  end
+
+  it "user_name2" do
+    form2 = OrderFinderForm2.new(:user_name2 => 'ABC')
+    form2.to_find_options.should == {
+      :conditions => ["cond_users.name LIKE ?", 'ABC%'],
+      :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
+    }
+  end
+
+  it "user_name3" do
+    form2 = OrderFinderForm2.new(:user_name3 => 'ABC')
+    form2.to_find_options.should == {
+      :conditions => ["cond_users.name LIKE ?", '%ABC'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
   end
