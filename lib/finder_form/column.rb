@@ -14,8 +14,9 @@ module FinderForm
     end
 
     def build(context)
+      @form_attr.build(context)
       if @static_values
-        context.add_condition(@static_values.map{|v| "#{table}.#{name} #{v}"}.
+        context.add_condition(@static_values.map{|v| "#{table.name}.#{name} #{v}"}.
           join(' %s ' % (options[:connector] || 'AND')))
         return
       end
@@ -26,8 +27,9 @@ module FinderForm
     end
 
     def foreign_key?
+      name = self.name.to_s
       table.model_class.reflections.
-        any?{|name, ref| ref.primary_key_name == name}
+        any?{|key, ref| ref.primary_key_name == name}
     end
 
     def model_column
@@ -60,31 +62,29 @@ module FinderForm
     end
 
     def setup_match_static
-      nil
+      new_attr(Attr::Static, {:connector => 'AND'}, @static_values)
     end
 
     def setup_match_partial
-      new_attr(Attr::Simple, {
-        :operator => 'like'
-      }.update(options))
+      new_attr(Attr::Simple, :operator => 'like')
     end
 
     def setup_match_exactly
-      new_attr(Attr::Simple, {
-        :operator => '='
-      }.update(options))
+      new_attr(Attr::Simple, :operator => '=')
     end
 
     def setup_match_range
-      new_attr(Attr::RangeAttrs, options[:range])
+      new_attr(Attr::RangeAttrs, options.delete(:range))
     end
 
-    def new_attr(klass, attr_options)
-      @form_attr = klass.new(self, options[:attr] || name, attr_options)
+    def new_attr(klass, default_options, *args)
+      options = (default_options || {}).update(self.options)
+      args << options
+      puts options.inspect
+      @form_attr = klass.new(self, options[:attr] || name, *args)
       @form_attr.setup
       @form_attr
     end
-   
 
 
   end
