@@ -16,7 +16,7 @@ module FinderForm
       def nil_available?; !!@nil_available; end
 
       def column_name(context)
-        context.single_table? ? column.name : "#{table.name}.#{column.name}"
+        context.single_table? ? column.name : "#{table.name_for_column}.#{column.name}"
       end
 
       def client_class_eval(script, &block)

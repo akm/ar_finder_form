@@ -5,6 +5,7 @@ module FinderForm
   autoload :ClientClassMethods, 'finder_form/client_class_methods'
   autoload :ClientInstanceMethods, 'finder_form/client_instance_methods'
   autoload :Table, 'finder_form/table'
+  autoload :JoinedTable, 'finder_form/joined_table'
   autoload :Column, 'finder_form/column'
   autoload :Attr, 'finder_form/attr'
   autoload :Builder, 'finder_form/builder'

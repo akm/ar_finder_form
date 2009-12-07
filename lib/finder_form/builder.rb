@@ -9,18 +9,13 @@ module FinderForm
       @client_class = client_class
     end
     
-    def build_methods
-      columns.each do |column|
-        column.setup
-#        attr_name = column.options[:attr] || column.name
-#        @client_class.module_eval("attr_accessor :#{attr_name}")
-      end
+    def root_table
+      self
     end
     
     def build(context)
-      columns.each do |column|
-        column.build(context)
-      end
+      context.single_table = joined_tables.empty?
+      super(context)
     end
 
   end

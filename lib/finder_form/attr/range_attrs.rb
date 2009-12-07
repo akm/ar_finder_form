@@ -22,13 +22,7 @@ module FinderForm
         sub_context = context.new_sub_context(:connector => 'AND')
         @min.build(sub_context)
         @max.build(sub_context)
-        conditions = sub_context.to_find_options[:conditions]
-        return unless conditions
-        if conditions.is_a?(Array)
-          context.add_condition(conditions.shift, *conditions)
-        else
-          context.add_condition(conditions)
-        end
+        context.merge(sub_context)
       end
     end
   end

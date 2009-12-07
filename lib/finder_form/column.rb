@@ -61,7 +61,7 @@ module FinderForm
     end
 
     def setup_match_partial
-      new_attr(Attr::Simple, :operator => 'like')
+      new_attr(Attr::Like, nil)
     end
 
     def setup_match_exactly

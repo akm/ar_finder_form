@@ -22,14 +22,19 @@ end
 
 module FinderForm
   class Table
-    attr_reader :model_class, :columns
+    attr_reader :model_class, :columns, :joined_tables
     def initialize(model_class, *args)
       @model_class = model_class
       @columns = NameAccessableArray.new(:name)
+      @joined_tables = []
     end
     
     def name
       @model_class.table_name
+    end
+
+    def name_for_column
+      name
     end
 
     def column(column_name, *args)
@@ -42,10 +47,43 @@ module FinderForm
       @model_columns.detect{|col| col.name.to_s == name}
     end
 
-    def root_table
-      self
+    def build_methods
+      columns.each{|column| column.setup}
+      joined_tables.each do |joined_table|
+        joined_table.build_methods
+      end
+    end
+    
+    def build(context)
+      columns.each{|column| column.build(context)}
+      joined_tables.each do |joined_table|
+        joined_table.build(context)
+      end
     end
 
+    def join(join_type, options, &block)
+      join_as = options.delete(:as)
+      join_on = options.delete(:on)
+      ref_name = [:belongs_to, :has_one, :has_many].map{|k| options[k]}.compact.first
+      raise ArgumentError, "#{join_type}_join requires :belongs_to, :has_one or :has_many" unless ref_name
+      ref = @model_class.reflections[ref_name]
+      raise ArgumentError, "no reflection for #{ref_name.inspect}" unless ref
+      result = JoinedTable.new(self, join_type, ref)
+      @joined_tables << result
+      result.instance_eval(&block)
+      result
+    end
+
+    JOIN_TYPES = (%w(inner cross natual) +
+      %w(left right full).map{|t| [t, "#{t}_outer"]}.flatten).map(&:to_sym)
+
+    JOIN_TYPES.each do |join_type|
+      class_eval(<<-"EOS")
+        def #{join_type.to_s}_join(options, &block)
+          join(:#{join_type.to_s}, options, &block)
+        end
+      EOS
+    end
 
   end
 end
