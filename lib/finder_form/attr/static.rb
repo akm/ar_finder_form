@@ -3,11 +3,9 @@ module FinderForm
   module Attr
     class Static < Base
 
-      attr_reader :options
       attr_reader :values
       def initialize(column, name, values, options)
-        super(column, name)
-        @options = options
+        super(column, name, options)
         @values = values || {}
       end
 
@@ -17,7 +15,7 @@ module FinderForm
 
       def build(context)
         context.add_condition(
-          values.map{|v| "#{table.name}.#{column.name} #{v}"}.
+          values.map{|v| "#{column_name(context)} #{v}"}.
           join(' %s ' % options[:connector]))
       end
 

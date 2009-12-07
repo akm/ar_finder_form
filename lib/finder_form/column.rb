@@ -15,11 +15,6 @@ module FinderForm
 
     def build(context)
       @form_attr.build(context)
-      if @static_values
-        context.add_condition(@static_values.map{|v| "#{table.name}.#{name} #{v}"}.
-          join(' %s ' % (options[:connector] || 'AND')))
-        return
-      end
     end
 
     def static?
@@ -80,7 +75,6 @@ module FinderForm
     def new_attr(klass, default_options, *args)
       options = (default_options || {}).update(self.options)
       args << options
-      puts options.inspect
       @form_attr = klass.new(self, options[:attr] || name, *args)
       @form_attr.setup
       @form_attr
