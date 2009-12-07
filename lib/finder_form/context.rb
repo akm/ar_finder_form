@@ -37,15 +37,23 @@ module FinderForm
       result
     end
     
+    def empty?
+      to_find_options[:conditions].nil? && joins.empty?
+    end
+
     def merge(sub_context)
       conditions = sub_context.to_find_options[:conditions]
-      return nil unless conditions
-      if conditions.is_a?(Array)
-        add_condition(conditions.shift, *conditions)
-      else
-        add_condition(conditions)
+      if conditions
+        if conditions.is_a?(Array)
+          add_condition(conditions.shift, *conditions)
+        else
+          add_condition(conditions)
+        end
       end
-      true
+      yield if block_given?
+      unless sub_context.joins.empty?
+        joins.concat(sub_context.joins)
+      end
     end
 
   end

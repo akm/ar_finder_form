@@ -29,13 +29,8 @@ module FinderForm
       @joined_tables = []
     end
     
-    def name
-      @model_class.table_name
-    end
-
-    def name_for_column
-      name
-    end
+    def table_name; @model_class.table_name; end
+    def name; table_name; end
 
     def column(column_name, *args)
       @columns << Column.new(self, column_name, *args)
