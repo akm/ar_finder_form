@@ -15,7 +15,10 @@ module FinderForm
     
     def build(context)
       context.single_table = joined_tables.empty?
+      form = context.form
+      form.send(:before_build, context) if form.respond_to?(:before_build)
       super(context)
+      form.send(:after_build, context) if form.respond_to?(:after_build)
     end
 
   end

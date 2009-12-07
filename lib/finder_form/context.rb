@@ -3,6 +3,7 @@ module FinderForm
   class Context
     attr_reader :form, :options, :joins
     attr_reader :where, :params
+    attr_accessor :order
     attr_accessor :single_table
     def initialize(form, options = {})
       @form, @options = form, options
@@ -22,6 +23,7 @@ module FinderForm
         conditions = [conditions].concat(@params)
       end
       result = {}
+      result[:order] = order unless order.blank?
       result[:joins] = joins.join(' ') unless joins.empty?
       result[:conditions] = conditions unless conditions.empty?
       result

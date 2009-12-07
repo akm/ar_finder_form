@@ -17,7 +17,19 @@ class UserFinderForm1
         column(:price)
       end
     end
-    
+  end
+
+  order("name asc")
+
+  attr_accessor :order_expression
+  def before_build(context)
+    context.order = order_expression if order_expression
+  end
+
+  def after_build(context)
+    if context.joins.any?{|join| join =~ /cond_products/}
+      context.order = "#{context.order}, cond_products.code asc"
+    end
   end
 end
 
@@ -26,12 +38,13 @@ describe UserFinderForm1 do
   
   it "no attribute" do
     form1 = UserFinderForm1.new
-    form1.to_find_options.should == {}
+    form1.to_find_options.should == {:order => "name asc"}
   end
   
   it "user_name" do
     form = UserFinderForm1.new(:user_name => 'ABC')
     form.to_find_options.should == {
+      :order => "name asc",
       :conditions => ["users.name LIKE ?", '%ABC%']
     }
   end
@@ -39,6 +52,16 @@ describe UserFinderForm1 do
   it "product_ids" do
     form = UserFinderForm1.new(:product_ids => %w(1 3 7))
     form.to_find_options.should == {
+      :order => "name asc",
+      :conditions => ["cond_orders.product_id IN (?)", [1,3,7]],
+      :joins => "INNER JOIN orders cond_orders ON cond_orders.user_id = users.id"
+    }
+  end
+
+  it "product_ids with custom order" do
+    form = UserFinderForm1.new(:product_ids => %w(1 3 7), :order_expression => "login desc")
+    form.to_find_options.should == {
+      :order => "login desc",
       :conditions => ["cond_orders.product_id IN (?)", [1,3,7]],
       :joins => "INNER JOIN orders cond_orders ON cond_orders.user_id = users.id"
     }
@@ -47,6 +70,17 @@ describe UserFinderForm1 do
   it "product_name" do
     form = UserFinderForm1.new(:product_name => "PPP")
     form.to_find_options.should == {
+      :order => "name asc, cond_products.code asc",
+      :conditions => ["cond_products.name LIKE ?", "%PPP%"],
+      :joins => "INNER JOIN orders cond_orders ON cond_orders.user_id = users.id" <<
+        " INNER JOIN products cond_products ON cond_products.id = cond_orders.product_id"
+    }
+  end
+
+  it "product_name" do
+    form = UserFinderForm1.new(:product_name => "PPP")
+    form.to_find_options.should == {
+      :order => "name asc, cond_products.code asc",
       :conditions => ["cond_products.name LIKE ?", "%PPP%"],
       :joins => "INNER JOIN orders cond_orders ON cond_orders.user_id = users.id" <<
         " INNER JOIN products cond_products ON cond_products.id = cond_orders.product_id"

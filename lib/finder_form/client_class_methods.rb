@@ -9,5 +9,9 @@ module FinderForm
       @builder
     end
 
+    def order(value = nil)
+      @order = value if value
+      @order
+    end
   end
 end
