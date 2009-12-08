@@ -49,6 +49,7 @@ begin
     s.email    = "akima@gmail.com"
     s.homepage = "http://github.com/akm/ar_finder_form/"
     s.authors  = ["Takeshi Akima"]
+    s.add_dependency("activerecord")
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"

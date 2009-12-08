@@ -1,0 +1,117 @@
+= ArFinderForm
+== ArFinderFormとは？
+
+検索条件フォームを少ない記述で組み立てるためのDSLを提供するライブラリです。
+
+== サンプル
+
+以下のようなデータベースがあった場合、
+ ActiveRecord::Schema.define(:version => 0) do
+   create_table :products, :force => true do |t|
+     t.string :category_cd
+     t.string :code
+     t.string :name
+     t.float :price
+     t.integer :stock
+     t.time :released_at
+     t.timestamp
+   end
+
+   create_table :orders, :force => true do |t|
+     t.integer :user_id
+     t.integer :product_id
+     t.integer :amount
+     t.float :price
+     t.date :delivery_estimate
+     t.time :delivered_at
+     t.time :deleted_at 
+     t.timestamp
+   end
+
+   create_table :users, :force => true do |t|
+     t.string :login
+     t.string :name
+     t.timestamp
+   end
+ end
+
+
+例えば、Userのfindに渡すオプションを組み立てるクラスを以下のように組み立てることができます。
+
+ class UserFinderForm1
+   include ArFinderForm
+
+   def initialize(attrs = {})
+     attrs.each{|key, value|send("#{key}=", value)}
+   end
+
+   with_model(User) do
+     # users.nameの条件。文字列なのでデフォルトでLIKEが使われます
+     column(:name, :attr => :user_name)
+     
+     # 関連するordersに関する条件を加えるため、ordersをinner joinで結合します。
+     inner_join(:has_many => :orders) do
+                          
+       # orders.product_idの条件。:operatorで:INを指定できます。
+       # :attrで指定している:product_idsがUserFinderForm1にattr_accessorで宣言されます。
+       column(:product_id, :attr => :product_ids, :operator => :IN)
+
+       # ordersに関連するusersに関する条件を加えるため、usersをinner joinで結合します。
+       # このようにjoinのネストも可能です。
+       inner_join(:belongs_to => :product) do
+       
+         # products.nameの条件。同じnameというカラムについてですが、conditionsには
+         # products.nameが出力され、UserFinderForm1の属性としては:product_nameが
+         # 宣言されます        
+         column(:name, :attr => :product_name)
+         
+         # products.priceの条件。関連に使われていないinteger,float,date,time,datetimeは
+         # :match => :exactなどが指定されない限りデフォルトでは範囲の条件となり、
+         # 属性としては :price_min, :price_maxが宣言されます 
+         column(:price)
+       end
+     end
+   end
+ end
+ 
+実際にfindに使うコードは
+ form = UserFinderForm1.new(:user_name => "akimatter", :product_name => "ABC")
+ users = User.find(:all, form.to_find_options)
+ users = form.find(:all)
+という感じになります。
+
+動的にオプションを設定することも可能です。
+ users = User.find(:all, form.to_find_options(:include => [xxxx]))
+ users = form.find(:all, :include => [xxxx]) 
+
+またwill_paginate用に以下のようなことも可能です。
+ form = UserFinderForm1.new(:user_name => "akimatter", :product_name => "ABC")
+ users = User.paginate(form.to_paginate_options(:page => params[:page])
+ users = form.paginate(:page => params[:page])
+
+詳しくはspecを御覧下さい。
+
+== セットアップ
+=== Railsのプラグインとして
+ ruby script/plugin install git://github.com/akm/ar_finder_form.git
+
+=== Railsでgemとして
+まずgemcutterの設定をしていなかったら、
+ gem install gemcutter
+ gem tumble
+を実行した後、
+ gem install ar_finder_form
+
+で、config/initializersに以下のファイルを作成すればオッケーです。
+
+config/initializers/ar_finder_form.rb
+
+ require 'ar_finder_form'
+
+
+== 備考
+フォームのクラスにはactive_formなどを継承することを想定しています。
+selectable_attr(およびselectable_attr_rails)もあわせて使うと便利かも。
+ 
+
+Copyright (c) 2008 Takeshi AKIMA, released under the MIT license
