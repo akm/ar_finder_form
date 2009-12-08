@@ -11,6 +11,10 @@ module FinderForm
       @form, @options = form, options
       @where, @params = [], []
       @joins = []
+      UNBUILT_ATTRS.each do |attr_name|
+        value = options.delete(attr_name)
+        send("#{attr_name}=", value) if value
+      end
       @connector = options.delete(:connector) || 'AND'
     end
 
@@ -77,7 +81,8 @@ module FinderForm
         builder = form.class.builder
         context = Context.new(form, options)
         UNBUILT_ATTRS.each do |attr_name|
-          context.send("#{attr_name}=", form.send(attr_name))
+          value = form.send(attr_name)
+          context.send("#{attr_name}=", value) unless value.blank?
         end
         builder.build(context)
         context

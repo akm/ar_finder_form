@@ -23,9 +23,6 @@ class OrderFinderForm1
     # 範囲integer
     column(:amount)
     # belongs_toに使われていないintegerはデフォルトでは範囲と判断されます。
-    # = column_range(:amount, '>=', '<=')
-    # = column_range(:amount, :min => '>=', :max => '<=')
-    # = column(:amount, :min => {:attr => :amount_min, :oprator => '>='}, :max => {:attr => :amount_max, :oprator => '<='})
     # = column(:amount, :range => {:min => {:attr => :amount_min, :oprator => '>='}, :max => {:attr => :amount_max, :oprator => '<='}})
     
     # 範囲float
@@ -33,7 +30,7 @@ class OrderFinderForm1
     # dateはデフォルトでは範囲と判断されます。
     # => column_range(:price) 
     # column_rangeにはデフォルトで :minに'>='と:maxに'<='が指定されます。
-    # => column_range(:price, :min => '>=', :max => '<=')
+    # = column(:price, :range => {:min => {:attr => :price_min, :oprator => '>='}, :max => {:attr => :price_max, :oprator => '<='}})
     
     # 範囲date
     column(:delivery_estimate)
@@ -54,24 +51,28 @@ end
 
 
 describe OrderFinderForm1 do
+
+  after do
+    Order.find(:all, @form.to_find_options)
+  end
   
   it "no attribute" do
-    form1 = OrderFinderForm1.new
-    form1.to_find_options.should == {
+    @form = OrderFinderForm1.new
+    @form.to_find_options.should == {
       :conditions => "deleted_at IS NOT NULL"
     }
   end
 
   describe "belongs_to" do
     it "with integer" do
-      form1 = OrderFinderForm1.new(:user_id => 3)
-      form1.to_find_options.should == {
+      @form = OrderFinderForm1.new(:user_id => 3)
+      @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND user_id = ?", 3]}
     end
 
     it "with string" do
-      form1 = OrderFinderForm1.new(:user_id => '3')
-      form1.to_find_options.should == {
+      @form = OrderFinderForm1.new(:user_id => '3')
+      @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND user_id = ?", 3]}
     end
   end
@@ -79,20 +80,20 @@ describe OrderFinderForm1 do
 
   describe "belongs_to IN" do
     it "with integer array" do
-      form1 = OrderFinderForm1.new(:product_ids => [1,2,3,4])
-      form1.to_find_options.should == {
+      @form = OrderFinderForm1.new(:product_ids => [1,2,3,4])
+      @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [1,2,3,4]]}
     end
     
     it "with String array" do
-      form1 = OrderFinderForm1.new(:product_ids => %w(3 4 6 8))
-      form1.to_find_options.should == {
+      @form = OrderFinderForm1.new(:product_ids => %w(3 4 6 8))
+      @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [3, 4, 6, 8]]}
     end
     
     it "with comma separated string" do
-      form1 = OrderFinderForm1.new(:product_ids => '1,2,3,4')
-      form1.to_find_options.should == {
+      @form = OrderFinderForm1.new(:product_ids => '1,2,3,4')
+      @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [1,2,3,4]]}
     end
     
@@ -101,40 +102,40 @@ describe OrderFinderForm1 do
   describe "integer range" do
     describe "as integer" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:amount_min => 3)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_min => 3)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount >= ?", 3]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:amount_max => 10)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_max => 10)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount <= ?", 10]}
       end
 
       it "with min and max" do
-        form1 = OrderFinderForm1.new(:amount_min => 4, :amount_max => 9)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_min => 4, :amount_max => 9)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount >= ? AND amount <= ?", 4, 9]}
       end
     end
 
     describe "as string" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:amount_min => '3')
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_min => '3')
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount >= ?", 3]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:amount_max => '10')
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_max => '10')
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount <= ?", 10]}
       end
 
       it "with min and max" do
-        form1 = OrderFinderForm1.new(:amount_min => '4', :amount_max => '9')
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:amount_min => '4', :amount_max => '9')
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND amount >= ? AND amount <= ?", 4, 9]}
       end
     end
@@ -143,40 +144,40 @@ describe OrderFinderForm1 do
   describe "float range" do
     describe "as float" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:price_min => 3.9)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_min => 3.9)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price >= ?", 3.9]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:price_max => 10.2)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_max => 10.2)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price <= ?", 10.2]}
       end
 
       it "with comma separated string" do
-        form1 = OrderFinderForm1.new(:price_min => 4.1, :price_max => 9.9)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_min => 4.1, :price_max => 9.9)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price >= ? AND price <= ?", 4.1, 9.9]}
       end
     end
 
     describe "as String" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:price_min => '3.1')
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_min => '3.1')
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price >= ?", 3.1]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:price_max => '10.1')
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_max => '10.1')
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price <= ?", 10.1]}
       end
 
       it "with comma separated string" do
-        form1 = OrderFinderForm1.new(:price_min => 4.0, :price_max => 9.5)
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:price_min => 4.0, :price_max => 9.5)
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND price >= ? AND price <= ?", 4.0, 9.5]}
       end
     end
@@ -187,60 +188,60 @@ describe OrderFinderForm1 do
   describe "date range" do
     describe "as Date" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => Date.parse("2009/11/15"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => Date.parse("2009/11/15"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ?", Date.parse("2009/11/15")]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_max => Date.parse("2009/11/15"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_max => Date.parse("2009/11/15"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate <= ?", Date.parse("2009/11/15")]}
       end
 
       it "with comma separated string" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => Date.parse("2009/11/1"), :delivery_estimate_max => Date.parse("2009/11/15"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => Date.parse("2009/11/1"), :delivery_estimate_max => Date.parse("2009/11/15"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ? AND delivery_estimate <= ?", Date.parse("2009/11/1"), Date.parse("2009/11/15")]}
       end
     end
 
     describe "as DateTime" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => DateTime.parse("2009/11/15 12:34:56"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => DateTime.parse("2009/11/15 12:34:56"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ?", DateTime.parse("2009/11/15 12:34:56")]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_max => DateTime.parse("2009/11/15 01:02:03"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_max => DateTime.parse("2009/11/15 01:02:03"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate <= ?", DateTime.parse("2009/11/15 01:02:03")]}
       end
 
       it "with comma separated string" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => DateTime.parse("2009/11/1 01:02:03"), :delivery_estimate_max => DateTime.parse("2009/11/15 11:32:33"))
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => DateTime.parse("2009/11/1 01:02:03"), :delivery_estimate_max => DateTime.parse("2009/11/15 11:32:33"))
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ? AND delivery_estimate <= ?", DateTime.parse("2009/11/1 01:02:03"), DateTime.parse("2009/11/15 11:32:33")]}
       end
     end
 
     describe "as String" do
       it "with min" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => "2009-11-1")
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => "2009-11-1")
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ?", Date.parse("2009/11/1")]}
       end
 
       it "with max" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_max => "H21.11.15")
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_max => "H21.11.15")
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate <= ?", Date.parse("2009/11/15")]}
       end
 
       it "with comma separated string" do
-        form1 = OrderFinderForm1.new(:delivery_estimate_min => "2009/11/1", :delivery_estimate_max => "2009/11/15")
-        form1.to_find_options.should == {
+        @form = OrderFinderForm1.new(:delivery_estimate_min => "2009/11/1", :delivery_estimate_max => "2009/11/15")
+        @form.to_find_options.should == {
           :conditions => ["deleted_at IS NOT NULL AND delivery_estimate >= ? AND delivery_estimate <= ?", Date.parse("2009/11/1"), Date.parse("2009/11/15")]}
       end
     end

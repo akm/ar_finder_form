@@ -20,5 +20,10 @@ module FinderForm
       context.to_paginate_options
     end
 
+    def find(*args)
+      options = to_find_options.update(args.extract_options!)
+      args << options
+      self.class.builder.model_class.find(*args)
+    end
   end
 end

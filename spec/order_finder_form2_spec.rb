@@ -26,36 +26,44 @@ end
 
 describe OrderFinderForm2 do
   
+  after do
+    Order.find(:all, @form.to_find_options)
+    @form.find(:all)
+  end  
+
   it "no attribute" do
-    form2 = OrderFinderForm2.new
-    form2.to_find_options.should == {}
+    @form = OrderFinderForm2.new
+    @form.to_find_options.should == {}
   end
   
   it "user_name1" do
-    form2 = OrderFinderForm2.new(:user_name1 => 'ABC')
-    form2.to_find_options.should == {
+    @form = OrderFinderForm2.new(:user_name1 => 'ABC')
+    @form.to_find_options.should == {
       :conditions => ["cond_users.name LIKE ?", '%ABC%'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
-    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
+    @form.to_paginate_options(:page => '2').should == 
+      {:per_page => 50, :page => '2'}.update(@form.to_find_options)
   end
 
   it "user_name2" do
-    form2 = OrderFinderForm2.new(:user_name2 => 'ABC')
-    form2.to_find_options.should == {
+    @form = OrderFinderForm2.new(:user_name2 => 'ABC')
+    @form.to_find_options.should == {
       :conditions => ["cond_users.name LIKE ?", 'ABC%'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
-    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
+    @form.to_paginate_options(:page => nil).should == 
+      {:per_page => 50}.update(@form.to_find_options)
   end
 
   it "user_name3" do
-    form2 = OrderFinderForm2.new(:user_name3 => 'ABC')
-    form2.to_find_options.should == {
+    @form = OrderFinderForm2.new(:user_name3 => 'ABC')
+    @form.to_find_options.should == {
       :conditions => ["cond_users.name LIKE ?", '%ABC'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
-    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
+    @form.to_paginate_options(:page => 3).should == 
+      {:per_page => 50, :page => 3}.update(@form.to_find_options)
   end
 
 end
