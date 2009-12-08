@@ -66,4 +66,16 @@ describe OrderFinderForm2 do
       {:per_page => 50, :page => 3}.update(@form.to_find_options)
   end
 
+  describe "pagenate" do
+    it "valid" do
+      Order.should_receive(:paginate).with({
+        :per_page => 50, :page => 3,
+        :conditions => ["cond_users.name LIKE ?", '%ABC'],
+        :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
+      })
+      @form = OrderFinderForm2.new(:user_name3 => 'ABC')
+      @form.paginate(:page => 3)
+    end
+  end
+
 end
