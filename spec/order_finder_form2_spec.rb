@@ -11,6 +11,7 @@ class OrderFinderForm2
   with_model(Order) do
     # joins
     inner_join(:belongs_to => :user) do
+      # Duplicated column name, but each attr is different.
       # like
       column(:name, :attr => :user_name1)
       # like forward
