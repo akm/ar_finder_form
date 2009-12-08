@@ -19,16 +19,16 @@ class UserFinderForm1
     end
   end
 
-  order("name asc")
+  find_options(:order => "name asc")
 
   attr_accessor :order_expression
   def before_build(context)
-    context.order = order_expression if order_expression
+    context.find_options[:order] = order_expression if order_expression
   end
 
   def after_build(context)
     if context.joins.any?{|join| join =~ /cond_products/}
-      context.order = "#{context.order}, cond_products.code asc"
+      context.find_options[:order] = "#{context.find_options[:order]}, cond_products.code asc"
     end
   end
 end

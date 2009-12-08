@@ -9,13 +9,14 @@ module FinderForm
       @builder
     end
 
-    UNBUILT_ATTRS.each do |attr_name|
-      module_eval(<<-EOS)
-        def #{attr_name}(value = nil)
-          @#{attr_name} = value if value
-          @#{attr_name}
-        end
-      EOS
+    def find_options(value = nil)
+      @find_options = value if value
+      @find_options ||= {}
+    end
+
+    def paginate_options(value = nil)
+      @find_options = value if value
+      @find_options ||= {}
     end
 
   end
