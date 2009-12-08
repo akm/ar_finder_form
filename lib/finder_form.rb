@@ -11,6 +11,12 @@ module FinderForm
   autoload :Builder, 'finder_form/builder'
   autoload :Context, 'finder_form/context'
 
+  ATTRS_TO_FIND = [:order, :group, :limit, :offset, # :include, 
+    :select, :from, :readonly, :lock
+  ]
+  ATTRS_TO_PAGINATE = [:per_page, :page]
+  UNBUILT_ATTRS = ATTRS_TO_FIND + ATTRS_TO_PAGINATE
+
   def self.included(mod)
     mod.extend(ClientClassMethods)
     mod.module_eval do

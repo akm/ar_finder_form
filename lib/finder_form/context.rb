@@ -3,8 +3,10 @@ module FinderForm
   class Context
     attr_reader :form, :options, :joins
     attr_reader :where, :params
-    attr_accessor :order
     attr_accessor :single_table
+    
+    UNBUILT_ATTRS.each{|attr_name| attr_accessor(attr_name)}
+
     def initialize(form, options = {})
       @form, @options = form, options
       @where, @params = [], []
@@ -17,15 +19,27 @@ module FinderForm
       @params.concat(params)
     end
 
-    def to_find_options
+    def to_find_options(options = nil)
       conditions = @where.join(" %s " % @connector)
       unless @params.empty?
         conditions = [conditions].concat(@params)
       end
       result = {}
-      result[:order] = order unless order.blank?
       result[:joins] = joins.join(' ') unless joins.empty?
       result[:conditions] = conditions unless conditions.empty?
+      ATTRS_TO_FIND.each do |atr_name|
+        value = send(atr_name)
+        result[atr_name] = value unless value.blank?
+      end
+      options ? result.update(options) : result
+    end
+
+    def to_paginate_options(options = nil)
+      result = to_find_options(options)
+      ATTRS_TO_PAGINATE.each do |attr_name|
+        value = send(attr_name)
+        result[attr_name] = value unless value.blank?
+      end
       result
     end
 
@@ -55,6 +69,18 @@ module FinderForm
       yield if block_given?
       unless sub_context.joins.empty?
         joins.concat(sub_context.joins)
+      end
+    end
+
+    class << self
+      def build(form, options)
+        builder = form.class.builder
+        context = Context.new(form, options)
+        UNBUILT_ATTRS.each do |attr_name|
+          context.send("#{attr_name}=", form.send(attr_name))
+        end
+        builder.build(context)
+        context
       end
     end
 

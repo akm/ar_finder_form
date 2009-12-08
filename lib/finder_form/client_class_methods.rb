@@ -9,9 +9,14 @@ module FinderForm
       @builder
     end
 
-    def order(value = nil)
-      @order = value if value
-      @order
+    UNBUILT_ATTRS.each do |attr_name|
+      module_eval(<<-EOS)
+        def #{attr_name}(value = nil)
+          @#{attr_name} = value if value
+          @#{attr_name}
+        end
+      EOS
     end
+
   end
 end

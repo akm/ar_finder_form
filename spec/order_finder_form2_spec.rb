@@ -19,6 +19,8 @@ class OrderFinderForm2
       column(:name, :attr => :user_name3, :match => :backward)
     end
   end
+
+  per_page(50)
 end
 
 
@@ -35,6 +37,7 @@ describe OrderFinderForm2 do
       :conditions => ["cond_users.name LIKE ?", '%ABC%'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
+    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
   end
 
   it "user_name2" do
@@ -43,6 +46,7 @@ describe OrderFinderForm2 do
       :conditions => ["cond_users.name LIKE ?", 'ABC%'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
+    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
   end
 
   it "user_name3" do
@@ -51,6 +55,7 @@ describe OrderFinderForm2 do
       :conditions => ["cond_users.name LIKE ?", '%ABC'],
       :joins => "INNER JOIN users cond_users ON cond_users.id = orders.user_id"
     }
+    form2.to_paginate_options.should == {:per_page => 50}.update(form2.to_find_options)
   end
 
 end
