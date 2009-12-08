@@ -10,8 +10,6 @@ module FinderForm
     attr_reader :where, :params
     attr_accessor :single_table
     
-    attr_accessor :find_options, :paginate_options
-
     def initialize(form, options = {})
       @form, @options = form, options
       @where, @params = [], []
@@ -98,6 +96,9 @@ module FinderForm
       builder.build(self)
       form.send(:after_build, self) if form.respond_to?(:after_build)
     end
+
+    def find_options; @find_options ||= {}; end
+    def paginate_options; @paginate_options ||= {}; end
 
     class << self
       def build(form, options)
