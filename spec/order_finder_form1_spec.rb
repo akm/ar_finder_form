@@ -11,41 +11,41 @@ class OrderFinderForm1
   with_model(Order) do
     # 静的なパラメータ
     column(:deleted_at, "IS NOT NULL")
-    
+
     # belongs_to単数一致
     column(:user_id, :attr => :user_id)
     # belongs_toに使われているintegerはデフォルトでは一致と判断されます。
-    
+
     # belongs_to複数一致
     column(:product_id, :attr => :product_ids, :operator => :IN)
     # :operatorが指定されているので、単数の一致ではなく複数のどれかへの一致になります
-    
+
     # 範囲integer
     column(:amount)
     # belongs_toに使われていないintegerはデフォルトでは範囲と判断されます。
     # = column(:amount, :range => {:min => {:attr => :amount_min, :oprator => '>='}, :max => {:attr => :amount_max, :oprator => '<='}})
-    
+
     # 範囲float
     column(:price)
     # dateはデフォルトでは範囲と判断されます。
-    # => column_range(:price) 
+    # => column_range(:price)
     # column_rangeにはデフォルトで :minに'>='と:maxに'<='が指定されます。
     # = column(:price, :range => {:min => {:attr => :price_min, :oprator => '>='}, :max => {:attr => :price_max, :oprator => '<='}})
-    
+
     # 範囲date
     column(:delivery_estimate)
     # dateはデフォルトでは範囲と判断されます。
-    # => column_range(:delivery_estimate) 
+    # => column_range(:delivery_estimate)
     # column_rangeにはデフォルトで :minに'>='と:maxに'<='が指定されます。
     # => column_range(:delivery_estimate, :min => '>=', :max => '<=')
-    
+
     # 範囲time
     column(:delivered_at)
     # timeはデフォルトでは範囲と判断されます。
-    # => column_range(:delivered_at) 
+    # => column_range(:delivered_at)
     # column_rangeにはデフォルトで :minに'>='と:maxに'<='が指定されます。
     # => column_range(:delivered_at, :min => '>=', :max => '<=')
-    
+
   end
 end
 
@@ -55,7 +55,7 @@ describe OrderFinderForm1 do
   after do
     Order.find(:all, @form.to_find_options)
   end
-  
+
   it "no attribute" do
     @form = OrderFinderForm1.new
     @form.to_find_options.should == {
@@ -76,7 +76,7 @@ describe OrderFinderForm1 do
         :conditions => ["deleted_at IS NOT NULL AND user_id = ?", 3]}
     end
   end
-  
+
 
   describe "belongs_to IN" do
     it "with integer array" do
@@ -84,19 +84,19 @@ describe OrderFinderForm1 do
       @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [1,2,3,4]]}
     end
-    
+
     it "with String array" do
       @form = OrderFinderForm1.new(:product_ids => %w(3 4 6 8))
       @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [3, 4, 6, 8]]}
     end
-    
+
     it "with comma separated string" do
       @form = OrderFinderForm1.new(:product_ids => '1,2,3,4')
       @form.to_find_options.should == {
         :conditions => ["deleted_at IS NOT NULL AND product_id IN (?)", [1,2,3,4]]}
     end
-    
+
   end
 
   describe "integer range" do
@@ -246,9 +246,5 @@ describe OrderFinderForm1 do
       end
     end
   end
-
-  
-
-  
 
 end

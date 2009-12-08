@@ -39,12 +39,12 @@ describe UserFinderForm1 do
   after do
     User.find(:all, @form.to_find_options)
   end
-  
+
   it "no attribute" do
     @form = UserFinderForm1.new
     @form.to_find_options.should == {:order => "name asc"}
   end
-  
+
   it "user_name" do
     @form = UserFinderForm1.new(:user_name => 'ABC')
     @form.to_find_options.should == {

@@ -25,7 +25,7 @@ describe FinderForm::Table do
   end
 
   describe "model_column_for" do
-    column_names = [:id, :user_id, :product_id, :amount, :price, 
+    column_names = [:id, :user_id, :product_id, :amount, :price,
       :delivery_estimate, :delivered_at, :deleted_at]
 
     it "by Symbol" do
@@ -41,8 +41,8 @@ describe FinderForm::Table do
       end
       @table.model_column_for(:unexist_column).should be_nil
     end
-    
+
   end
-  
+
 
 end
