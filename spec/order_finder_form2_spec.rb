@@ -18,7 +18,6 @@ class OrderFinderForm2
       # like backward
       column(:name, :attr => :user_name3, :match => :backward)
     end
-    
   end
 end
 

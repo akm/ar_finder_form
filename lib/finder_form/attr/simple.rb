@@ -16,7 +16,7 @@ module FinderForm
         return unless match?(context)
         case operator
         when :in then
-          context.add_condition("#{column_name(context)} IN (?)", 
+          context.add_condition("#{column_name(context)} IN (?)",
             form_value_array(context))
         else
           context.add_condition(

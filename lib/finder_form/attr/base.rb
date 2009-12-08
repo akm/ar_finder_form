@@ -11,7 +11,7 @@ module FinderForm
         @attr_filter = options[:attr_filter] || method(:column_type_cast)
         @array_separator = options.delete(:array_separator) || /[\s\,]/
       end
-    
+
       def table; column.table; end
       def nil_available?; !!@nil_available; end
 

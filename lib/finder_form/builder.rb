@@ -8,11 +8,11 @@ module FinderForm
       super(model_class)
       @client_class = client_class
     end
-    
+
     def root_table
       self
     end
-    
+
     def build(context)
       context.single_table = joined_tables.empty?
       form = context.form

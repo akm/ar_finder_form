@@ -2,7 +2,7 @@ require 'finder_form/attr'
 module FinderForm
   module Attr
     class RangeAttrs < Base
-      
+
       attr_accessor :min, :max
       def initialize(column, name, options)
         super(column, name, options)

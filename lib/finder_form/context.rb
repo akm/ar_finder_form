@@ -11,12 +11,12 @@ module FinderForm
       @joins = []
       @connector = options.delete(:connector) || 'AND'
     end
-    
+
     def add_condition(where, *params)
       @where << where
       @params.concat(params)
     end
-    
+
     def to_find_options
       conditions = @where.join(" %s " % @connector)
       unless @params.empty?
@@ -38,7 +38,7 @@ module FinderForm
       result.single_table = self.single_table
       result
     end
-    
+
     def empty?
       to_find_options[:conditions].nil? && joins.empty?
     end

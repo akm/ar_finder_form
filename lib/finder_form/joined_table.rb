@@ -30,7 +30,7 @@ module FinderForm
     end
 
     def build_join
-      join_on = 
+      join_on =
         case reflection.macro
         when :belongs_to then
           "#{name}.id = #{parent_table.name}.#{reflection.primary_key_name}"

@@ -6,7 +6,7 @@ class NameAccessableArray < Array
     super(*args, &block)
     @item_name = item_name
   end
-  
+
   def [](index_or_name)
     if index_or_name.is_a?(Integer)
       super.[](index_or_name)
@@ -14,7 +14,7 @@ class NameAccessableArray < Array
       detect{|item| name_for(item) == index_or_name}
     end
   end
-  
+
   def name_for(item)
     item.send(item_name)
   end
@@ -28,7 +28,7 @@ module FinderForm
       @columns = NameAccessableArray.new(:name)
       @joined_tables = []
     end
-    
+
     def table_name; @model_class.table_name; end
     def name; table_name; end
 
@@ -48,7 +48,7 @@ module FinderForm
         joined_table.build_methods
       end
     end
-    
+
     def build(context)
       columns.each{|column| column.build(context)}
       joined_tables.each do |joined_table|
