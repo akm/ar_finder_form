@@ -1,5 +1,5 @@
-require 'finder_form'
-module FinderForm
+require 'ar_finder_form'
+module ArFinderForm
   module ClientInstanceMethods
     def find_options(value = nil)
       @find_options = value if value

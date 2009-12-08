@@ -20,7 +20,7 @@ Spec::Rake::SpecTask.new(:spec => 'coverage:clean') do |t|
   t.rcov_opts = ["--exclude", "spec\/"]
 end
  
-desc 'Generate documentation for the finder_form plugin.'
+desc 'Generate documentation for the ar_finder_form plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'FinderForm'
@@ -43,11 +43,11 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name = "finder_form"
-    s.summary  = "finder_form provides to define form for options to find"
-    s.description  = "finder_form provides to define form for options to find"
+    s.name = "ar_finder_form"
+    s.summary  = "ar_finder_form provides a DSL to define form for options to find/paginate"
+    s.description  = "ar_finder_form provides a DSL to define form for options to find/paginate"
     s.email    = "akima@gmail.com"
-    s.homepage = "http://github.com/akm/finder_form/"
+    s.homepage = "http://github.com/akm/ar_finder_form/"
     s.authors  = ["Takeshi Akima"]
   end
 rescue LoadError

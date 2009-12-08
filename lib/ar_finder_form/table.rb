@@ -1,4 +1,4 @@
-require 'finder_form'
+require 'ar_finder_form'
 
 class NameAccessableArray < Array
   attr_accessor :item_name
@@ -20,7 +20,7 @@ class NameAccessableArray < Array
   end
 end
 
-module FinderForm
+module ArFinderForm
   class Table
     attr_reader :model_class, :columns, :joined_tables
     def initialize(model_class, *args)

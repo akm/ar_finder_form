@@ -1,1 +1,1 @@
-require "finder_form"
+require "ar_finder_form"

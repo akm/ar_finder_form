@@ -1,6 +1,6 @@
-require 'finder_form'
+require 'ar_finder_form'
 
-module FinderForm
+module ArFinderForm
   class JoinedTable < Table
     attr_reader :reflection, :join_type, :parent_table
     def initialize(parent_table, join_type, reflection, *args)

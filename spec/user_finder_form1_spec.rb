@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 class UserFinderForm1
-  include FinderForm
+  include ArFinderForm
 
   def initialize(attrs = {})
     attrs.each{|key, value|send("#{key}=", value)}

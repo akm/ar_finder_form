@@ -1,5 +1,5 @@
-require 'finder_form'
-module FinderForm
+require 'ar_finder_form'
+module ArFinderForm
   class Column
     attr_reader :table, :name, :options
     attr_reader :form_attr

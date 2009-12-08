@@ -1,6 +1,6 @@
-require 'finder_form'
+require 'ar_finder_form'
 
-module FinderForm
+module ArFinderForm
   class Builder < Table
     attr_reader :client_class, :model_class
     attr_reader :columns

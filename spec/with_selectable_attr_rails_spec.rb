@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 class OrderFinderForm3
-  include FinderForm
+  include ArFinderForm
   include SelectableAttr::Base
 
   def initialize(attrs = {})

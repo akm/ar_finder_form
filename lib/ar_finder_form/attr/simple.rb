@@ -1,5 +1,5 @@
-require 'finder_form/attr'
-module FinderForm
+require 'ar_finder_form/attr'
+module ArFinderForm
   module Attr
     class Simple < Base
       attr_reader :operator

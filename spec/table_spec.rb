@@ -2,7 +2,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 class OrderFinderFormForTable
-  include FinderForm
+  include ArFinderForm
 
   with_model(Order) do
   end
@@ -10,7 +10,7 @@ class OrderFinderFormForTable
 end
 
 
-describe FinderForm::Table do
+describe ArFinderForm::Table do
 
   before do
     @table = OrderFinderFormForTable.builder

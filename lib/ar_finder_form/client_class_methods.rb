@@ -1,5 +1,5 @@
-require 'finder_form'
-module FinderForm
+require 'ar_finder_form'
+module ArFinderForm
   module ClientClassMethods
     attr_reader :builder
     def with_model(model_class, &block)

@@ -1,5 +1,5 @@
-require 'finder_form'
-module FinderForm
+require 'ar_finder_form'
+module ArFinderForm
   class Context
     FIND_OPTIONS_KEYS = [:order, :group, :limit, :offset, :include, 
       :select, :from, :readonly, :lock
